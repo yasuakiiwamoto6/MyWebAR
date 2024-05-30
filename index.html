@@ -1,44 +1,58 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyWebAR</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <title>AR Ground Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.126.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webxr/ar-module@latest"></script>
 </head>
-<body>
-    <div id="message">Initializing...</div>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
-        <a-marker preset="hiro">
-            <a-box position="0 0.5 0" material="color: yellow;"></a-box>
-            <a-text value="お店１" position="0 1 0" align="center"></a-text>
-        </a-marker>
-        <a-entity camera></a-entity>
-    </a-scene>
+<body style="margin: 0; overflow: hidden;">
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('message').textContent = 'DOM fully loaded and parsed';
-        });
+        let scene, camera, renderer, controller;
 
-        window.addEventListener('load', (event) => {
-            document.getElementById('message').textContent = 'Window loaded';
-        });
+        init();
+        animate();
 
-        AFRAME.registerComponent('markerhandler', {
-            init: function() {
-                const marker = this.el;
-                marker.addEventListener('markerFound', () => {
-                    document.getElementById('message').textContent = 'Marker Found';
-                });
-                marker.addEventListener('markerLost', () => {
-                    document.getElementById('message').textContent = 'Marker Lost';
-                });
-            }
-        });
+        function init() {
+            scene = new THREE.Scene();
 
-        document.querySelector('a-marker').setAttribute('markerhandler', '');
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+            camera.position.z = 1;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.xr.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+            scene.add(light);
+
+            controller = renderer.xr.getController(0);
+            scene.add(controller);
+
+            const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+            const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const box = new THREE.Mesh(geometry, material);
+            box.position.set(0, 0, -0.5);
+            controller.add(box);
+
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            renderer.setAnimationLoop(render);
+        }
+
+        function render() {
+            renderer.render(scene, camera);
+        }
     </script>
 </body>
 </html>
