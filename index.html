@@ -10,12 +10,35 @@
 </head>
 <body>
     <div id="message">Initializing...</div>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
         <a-marker preset="hiro">
             <a-box position="0 0.5 0" material="color: yellow;"></a-box>
             <a-text value="お店１" position="0 1 0" align="center"></a-text>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('message').textContent = 'DOM fully loaded and parsed';
+        });
+
+        window.addEventListener('load', (event) => {
+            document.getElementById('message').textContent = 'Window loaded';
+        });
+
+        AFRAME.registerComponent('markerhandler', {
+            init: function() {
+                const marker = this.el;
+                marker.addEventListener('markerFound', () => {
+                    document.getElementById('message').textContent = 'Marker Found';
+                });
+                marker.addEventListener('markerLost', () => {
+                    document.getElementById('message').textContent = 'Marker Lost';
+                });
+            }
+        });
+
+        document.querySelector('a-marker').setAttribute('markerhandler', '');
+    </script>
 </body>
 </html>
