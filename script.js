@@ -1,6 +1,9 @@
+document.getElementById('message').textContent = 'Checking WebXR support...';
+
 if (navigator.xr) {
     navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
         if (supported) {
+            document.getElementById('message').textContent = 'WebXR supported. Click to start AR.';
             const button = document.createElement('button');
             button.style.position = 'absolute';
             button.style.bottom = '20px';
@@ -13,14 +16,16 @@ if (navigator.xr) {
             };
             document.body.appendChild(button);
         } else {
-            console.log('WebXR not supported.');
+            document.getElementById('message').textContent = 'WebXR not supported.';
         }
     });
 } else {
-    console.log('WebXR not available.');
+    document.getElementById('message').textContent = 'WebXR not available.';
 }
 
 function startAR() {
+    document.getElementById('message').textContent = 'Starting AR session...';
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
@@ -41,7 +46,8 @@ function startAR() {
 
     navigator.xr.requestSession('immersive-ar', { requiredFeatures: ['hit-test'] }).then((session) => {
         renderer.xr.setSession(session);
-        
+        document.getElementById('message').textContent = 'AR session started.';
+
         const controller = renderer.xr.getController(0);
         scene.add(controller);
 
@@ -73,5 +79,7 @@ function startAR() {
         }
 
         animate();
+    }).catch((error) => {
+        document.getElementById('message').textContent = 'Failed to start AR session: ' + error.message;
     });
 }
