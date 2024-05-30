@@ -8,4 +8,12 @@ body, html {
     justify-content: center;
     align-items: center;
     background-color: #000;
+    color: white;
+}
+
+#message {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
 }
