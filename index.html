@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Web AR App</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/3.3.2/aframe/build/aframe-ar.js"></script>
-    <script src="app.js" defer></script>
-  </head>
-  <body>
-    <a-scene embedded arjs='sourceType: webcam;'>
-      <a-assets>
-        <a-asset-item id="asset-eevee" src="C:\Users\岩本泰彰\Pictures\AR\img_mv_01.png"></a-asset-item>
-      </a-assets>
-      <a-camera gps-camera arjs-look-controls='smoothingFactor: 0.1' rotation-reader></a-camera>
-    </a-scene>
-  </body>
+   <script src="https://aframe.io/releases/1.0.0/aframe.min.js"></script>
+   <!-- we import arjs version without NFT but with marker + location based support -->
+   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+   <body style="margin : 0px; overflow: hidden;">
+       <a-scene embedded arjs>
+       <a-marker preset="hiro">
+           <!-- we use cors proxy to avoid cross-origin problems ATTENTION! you need to set up your server -->
+           <a-entity
+           position="0 -1 0"
+           scale="0.05 0.05 0.05"
+           gltf-model="your-server/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
+           ></a-entity>
+       </a-marker>
+       <a-entity camera></a-entity>
+       </a-scene>
+   </body>
 </html>
