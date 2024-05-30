@@ -18,6 +18,7 @@ window.onload = () => {
     } else {
         alert("Geolocation is not supported by this browser.");
     }
+    
 };
 
 // 緯度経度から距離を計算
