@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyWebAR</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/aframe@1.2.0/dist/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
-<body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;' vr-mode-ui="enabled: false">
-        <a-marker gps-projected-entity-place="latitude: 35.7503; longitude: 139.7356;">
-            <a-box color="yellow" position="0 0.5 0" material="opacity: 0.5;"></a-box>
-            <a-text value="お店１" position="0 1 0" align="center"></a-text>
-        </a-marker>
+<body>
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-text value="位置情報取得中..." position="0 2 -5" id="infoText"></a-text>
         <a-entity camera></a-entity>
     </a-scene>
+    <script src="script.js"></script>
 </body>
 </html>
