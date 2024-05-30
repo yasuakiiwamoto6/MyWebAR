@@ -18,6 +18,8 @@ if (navigator.xr) {
         } else {
             document.getElementById('message').textContent = 'WebXR not supported.';
         }
+    }).catch((error) => {
+        document.getElementById('message').textContent = 'Error checking WebXR support: ' + error.message;
     });
 } else {
     document.getElementById('message').textContent = 'WebXR not available.';
