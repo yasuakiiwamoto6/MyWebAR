@@ -1,40 +1,84 @@
-window.onload = () => {
-    // 位置情報を監視して更新する
-    if ('geolocation' in navigator) {
-        navigator.geolocation.watchPosition(position => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            const storeLat = 35.7503;  // 東京都北区豊島2-25-5の緯度
-            const storeLon = 139.7356; // 東京都北区豊島2-25-5の経度
-            const distance = getDistanceFromLatLonInKm(latitude, longitude, storeLat, storeLon);
-
-            if (distance < 0.05) { // 50メートル以内の場合
-                document.querySelector('a-text').setAttribute('value', 'お店１');
-            } else {
-                document.querySelector('a-text').setAttribute('value', '近くにお店はありません');
-            }
-        });
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-    
-};
-
-// 緯度経度から距離を計算
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // 地球の半径 (km)
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c; // 距離 (km)
-    return d;
+// Check if WebXR is supported
+if (navigator.xr) {
+    navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+        if (supported) {
+            initXR();
+        } else {
+            console.log('WebXR not supported.');
+        }
+    });
+} else {
+    console.log('WebXR not available.');
 }
 
-function deg2rad(deg) {
-    return deg * (Math.PI / 180);
+function initXR() {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+    light.position.set(0.5, 1, 0.25);
+    scene.add(light);
+
+    const geometry = new THREE.BoxGeometry(0.06, 0.06, 0.06);
+    const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(0, 0, -0.5);
+    scene.add(cube);
+
+    // AR button
+    const xrButton = document.createElement('button');
+    xrButton.style.display = 'none';
+    xrButton.style.position = 'absolute';
+    xrButton.style.bottom = '20px';
+    xrButton.style.left = '50%';
+    xrButton.style.transform = 'translateX(-50%)';
+    xrButton.style.padding = '10px 20px';
+    xrButton.style.background = 'rgba(0,0,0,0.6)';
+    xrButton.style.color = 'white';
+    xrButton.style.fontSize = '20px';
+    xrButton.style.border = 'none';
+    xrButton.style.cursor = 'pointer';
+    document.body.appendChild(xrButton);
+
+    navigator.xr.requestSession('immersive-ar', { requiredFeatures: ['hit-test'] }).then((session) => {
+        renderer.xr.setSession(session);
+        xrButton.style.display = 'none';
+    });
+
+    const controller = renderer.xr.getController(0);
+    scene.add(controller);
+
+    const raycaster = new THREE.Raycaster();
+    const tempMatrix = new THREE.Matrix4();
+
+    controller.addEventListener('selectstart', () => {
+        const referenceSpace = renderer.xr.getReferenceSpace();
+        const frame = renderer.xr.getFrame();
+        const viewerPose = frame.getViewerPose(referenceSpace);
+        if (viewerPose) {
+            const ray = new XRRay(viewerPose.transform);
+            const hitTestResults = frame.getHitTestResults(ray);
+            if (hitTestResults.length > 0) {
+                const hit = hitTestResults[0];
+                const hitPose = hit.getPose(referenceSpace);
+                cube.position.set(hitPose.transform.position.x, hitPose.transform.position.y, hitPose.transform.position.z);
+                scene.add(cube);
+            }
+        }
+    });
+
+    function animate() {
+        renderer.setAnimationLoop(render);
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+
+    animate();
 }
