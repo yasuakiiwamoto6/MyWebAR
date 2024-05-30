@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARナビゲーション</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="permission-menu">
+        <p>このアプリを使用するには、カメラと位置情報のアクセスを許可してください。</p>
+        <button id="request-permissions">許可する</button>
+    </div>
+    <div id="ar-container" style="display:none;">
+        <video id="camera" autoplay playsinline></video>
+        <div id="label">お店１</div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
