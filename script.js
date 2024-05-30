@@ -1,4 +1,5 @@
 window.onload = () => {
+    // 位置情報を監視して更新する
     if ('geolocation' in navigator) {
         navigator.geolocation.watchPosition(position => {
             const latitude = position.coords.latitude;
@@ -9,9 +10,9 @@ window.onload = () => {
             const distance = getDistanceFromLatLonInKm(latitude, longitude, storeLat, storeLon);
 
             if (distance < 0.05) { // 50メートル以内の場合
-                document.getElementById('infoText').setAttribute('value', 'お店１');
+                document.querySelector('a-text').setAttribute('value', 'お店１');
             } else {
-                document.getElementById('infoText').setAttribute('value', '近くにお店はありません');
+                document.querySelector('a-text').setAttribute('value', '近くにお店はありません');
             }
         });
     } else {
